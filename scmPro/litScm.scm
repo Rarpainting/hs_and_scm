@@ -144,22 +144,6 @@
      ((null? l) 0)
      (else (add1 length (cdr l))))))
 
-(define pick
-  (lambda (n lat)
-    (cond
-     ((null? lat) '())
-     ((= n 1) (car lat))
-     (else (pick (sub1 n) (cdr lat))))))
-
-(define rempick
-  (lambda (n lat)
-    (cond
-     ((null? lat) '())
-     ((= n 1) (cdr lat))
-     (else (cons
-            (car lat)
-            (rempick (sub1 n) (cdr lat)))))))
-
 (define no-nums
   (lambda (l)
     (cond
@@ -177,3 +161,97 @@
                          (car l)
                          (all-nums (cdr l))))
      (else (all-nums (cdr l))))))
+
+(define eqan?
+  (lambda (a1 a2)
+    (cond
+     ((and (number? a1) (number? a2)) (= a1 a2))
+     ((or (number? a1) (number? a2)) #f)
+     (else (eq? a1 a2)))))
+
+(define occur
+  (lambda (a lat)
+    (cond
+     ((eqan? a (car lat)) (add1 (occur a (cdr lat))))
+     (else (occur a (cdr lat))))))
+
+(define one?
+  (lambda (n)
+    (= n 1)))
+
+(define pick
+  (lambda (n lat)
+    (cond
+     ((null? lat) '())
+     ((one? n) (car lat))
+     (else (pick (sub1 n) (cdr lat))))))
+
+(define rempick
+  (lambda (n lat)
+    (cond
+     ((null? lat) '())
+     ((one? n) (cdr lat))
+     (else (cons
+            (car lat)
+            (rempick (sub1 n) (cdr lat)))))))
+
+;;;;;; Chapter 5 ;;;;;;;;
+
+(define rember*
+  (lambda (a l)
+    (cond
+     ((null? l) '())
+     ((atom? (car l)) (cond
+                       ((eq? a (car l)) (rember* (cdr l)))
+                       (else (cons
+                              (car l)
+                              (rember* (cdr l))))))
+     (cons
+      (rember* (car l))
+      (rember* (cdr l))))))
+
+(define insertR*
+  (lambda (new old l)
+    (cond
+     ((null? l) '())
+     (atom? (car l)) (cond
+                      ((eq? old (car l)) (cons
+                                          (old)
+                                          (cons
+                                           (new)
+                                           (insertR* new old (cdr l)))))
+                      (else (cons
+                             (car l)
+                             (insertR* new old (cdr l)))))
+     (else (cons
+            (insertR* new old (car l))
+            (insertR* new old (cdr l)))))))
+
+(define insertL*
+  (lambda (new old l)
+    (cond
+     ((null? l) '())
+     (atom? (car l)) (cond
+                      ((eq? old (car l)) (cons
+                                          (new)
+                                          (cons
+                                           (old)
+                                           (insertL* new old (cdr l)))))
+                      (else (cons
+                             (car l)
+                             (insertL* new old (cdr l)))))
+     (else (cons
+            (insertL* new old (car l))
+            (insertL* new old (cdr l)))))))
+
+(define occur*
+  (lambda (a l)
+    (cond
+     ((null? l) 0)
+     ((atom? (car l)) (cond
+                       ((eq? a (car l)) (add1
+                                         (occur* a (cdr l))))
+                       (else (occur* a (cdr l)))))
+     (else (o+
+            (occur* a (car l))
+            (occur* a (cdr l)))))))
