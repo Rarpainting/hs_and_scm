@@ -16,11 +16,12 @@
      ((atom? (car l)) (lat? (cdr l)))
      (else #f))))
 
+;; 使用 eqan? 代替 eq?
 (define member?
   (lambda (a lat)
     (cond
      ((null? lat) #f)
-     ((eq? a (car lat)) #t)
+     ((eqan? a (car lat)) #t)
      (else (member? a (cdr lat))))))
 
 (define rember
@@ -63,6 +64,7 @@
                             (insertL (cdr lat)))))
      (else (insertL new old (cdr lat))))))
 
+;; 对比并替换 old
 (define subst
   (lambda (new old lat)
     (cond
@@ -277,8 +279,51 @@
     (cond
      ((and (null? l1) (null? l2)) #t)
      ((or (null? l1) (null? l2)) #f)
-     ((and (atom? (car l1)) (atom? (car l2))) (and (eqan? (car l1) (car l2))
-                                                   (eqlist? (cdr l1) (cdr l2))))
-     ((or (atom? (car l1)) (atom? (car l2))) #f)
-     (else (and (eqlist? (car l1) (car l2))
+     (else (and (equal? (car l1) (car l2))
                 (eqlist? (cdr l1) (car l2)))))))
+
+(define equal?
+  (lambda (s1 s2)
+    (cond
+     ((and (atom? s1) (atom? s2)) (eqan? s1 s2))
+     ((or (atom? s1) (atom? s2)) #f)
+     (else (eqlist? s1 s2)))))
+
+;; Chapter 6
+
+;; 判断是否 (a + b) or a 类型
+(define numbered?
+  (lambda (aexp)
+    (cond
+     ((atom? aexp) (number? aexp))
+     (else (and
+            (number? (car aexp))
+            (numbered? (car (cdr (cdr aexp)))))))))
+
+(define set?
+  (lambda (lat)
+    (cond
+     ((null? lat) #t)
+     ((member? (car lat) (cdr lat)) #f)
+     (else (set? (cdr lat))))))
+
+(define makeSet
+  (lambda (lat)
+    (cond
+     ((null? lat) '())
+     ((member? (car lat) (cdr lat)) (makeSet (cdr lat)))
+     (else (cons
+            (car lat)
+            (makeSet (cdr lat))))))))
+
+;; 判断 set1 是否都在 set2
+(define subset?
+  (lambda (set1 set2)
+    (cond
+     ((null? set1) #t)
+     (else (and (not (member? (car set1) set2)) (subset? (cdr set1) set2))))))
+
+(define eqset?
+  (lambda (set1 set2)
+    (and (subset? (set1 set2))
+         (subset? (set2 set1)))))
