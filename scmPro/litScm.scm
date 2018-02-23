@@ -327,3 +327,39 @@
   (lambda (set1 set2)
     (and (subset? (set1 set2))
          (subset? (set2 set1)))))
+
+;; 判断 set1 是否有原子在 set2 中
+(define intersect?
+  (lambda (set1 set2)
+    (cond
+     ((null? set1) #f)
+     (else (or (member? (car set1) set2)
+               (intersect? (cdr set1) set2))))))
+
+;; 交集
+(define intersect
+  (lambda (set1 set2)
+    (cond
+     ((null? set1) '())
+     ((member? (car set1) set2) (cons
+                                 (car set1)
+                                 (intersect (cdr set1) set2)))
+     (else (intersect (cdr set1) set2)))))
+
+;; 并集
+(define union
+  (lambda (set1 set2)
+    (cond
+     ((null? set1) set2)
+     ((member? (car set1) set2) (union (cdr set1) set2))
+     (else (cons (car set1)
+                 (union (cdr set1) set2))))))
+
+;; set1 对于 set2 的差集 (注意描述)
+(define defference
+  (lambda (set1 set2)
+    (cond
+     ((null? set1) '())
+     ((member? (car set1) set2) (defference (cdr set1) set2))
+     (else (cons (car set1)
+                 (defference (cdr set1) set2))))))
