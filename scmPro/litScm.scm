@@ -42,6 +42,16 @@
             (car (car l))
             (firsts (cdr l)))))))
 
+(define seconds
+  (lambda (l)
+    (cond
+     ((null? l) '())
+     ((or (atom? (car l))
+          (null? (cdr (car l)))) (seconds (cdr l)))
+     (else (cons
+            (cdr (car l))
+            (seconds (cdr l)))))))
+
 (define insertR
   (lambda (new old lat)
     (cond
@@ -216,15 +226,15 @@
   (lambda (new old l)
     (cond
      ((null? l) '())
-     (atom? (car l)) (cond
-                      ((eq? old (car l)) (cons
-                                          (old)
-                                          (cons
-                                           (new)
-                                           (insertR* new old (cdr l)))))
-                      (else (cons
-                             (car l)
-                             (insertR* new old (cdr l)))))
+     ((atom? (car l)) (cond
+                        ((eq? old (car l)) (cons
+                                            (old)
+                                            (cons
+                                             (new)
+                                             (insertR* new old (cdr l)))))
+                        (else (cons
+                               (car l)
+                               (insertR* new old (cdr l))))))
      (else (cons
             (insertR* new old (car l))
             (insertR* new old (cdr l)))))))
@@ -233,7 +243,7 @@
   (lambda (new old l)
     (cond
      ((null? l) '())
-     (atom? (car l)) (cond
+     ((atom? (car l)) (cond
                       ((eq? old (car l)) (cons
                                           (new)
                                           (cons
@@ -241,7 +251,7 @@
                                            (insertL* new old (cdr l)))))
                       (else (cons
                              (car l)
-                             (insertL* new old (cdr l)))))
+                             (insertL* new old (cdr l))))))
      (else (cons
             (insertL* new old (car l))
             (insertL* new old (cdr l)))))))
@@ -314,7 +324,7 @@
      ((member? (car lat) (cdr lat)) (makeSet (cdr lat)))
      (else (cons
             (car lat)
-            (makeSet (cdr lat))))))))
+            (makeSet (cdr lat)))))))
 
 ;; 判断 set1 是否都在 set2
 (define subset?
@@ -363,3 +373,65 @@
      ((member? (car set1) set2) (defference (cdr set1) set2))
      (else (cons (car set1)
                  (defference (cdr set1) set2))))))
+
+(define intersectall
+  (lambda (l-set)
+    (cond
+     ((null? (cdr l-set)) (car l-set))
+     (else (intersect (car l-set) (intersectall (cdr l-set)))))))
+
+;; pair: 序对
+;; (atom1 . (atom2 . ()))
+(define a-pair?
+  (lambda (l)
+    (cond
+     ((null? l) #f)
+     ((atom? l) #f)
+     ((null? (cdr l)) #f)
+     ((null? (cdr (cdr l))) #t)
+     (else #f))))
+
+(define first
+  (lambda (p)
+    (car p)))
+
+(define second
+  (lambda (p)
+    (cdr p)))
+
+(define build-list
+  (lambda (s1 s2)
+    (cons (s1)
+          (cons (s2)
+                ('())))))
+
+;; 有限函数 -- pair 列表
+(define fun?
+  (lambda (rel)
+    (set? (firsts rel))))
+
+(define revpair
+  (lambda (pair)
+    (build-list
+     (second pair)
+     (first pair))))
+
+(define revrel
+  (lambda (rel)
+    (cond
+     ((null? rel) '())
+     (else (cons
+            (revpair (car rel))
+            (revrel (cdr rel)))))))
+
+;; 全函数
+(define fullfun?
+  (lambda (rel)
+    (set? (seconds rel))))
+
+(define one-to-one?
+  (lambda (fun)
+    (fun? (revrel fun))))
+
+(define rember-f
+  (lambda (test? a l)))
