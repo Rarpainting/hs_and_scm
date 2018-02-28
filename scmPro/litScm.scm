@@ -434,4 +434,44 @@
     (fun? (revrel fun))))
 
 (define rember-f
-  (lambda (test? a l)))
+  (lambda (test?)
+    (lambda (a l)
+      (cond
+       ((null? l) '())
+       ((test? a (car l)) (rember-f test? a (cdr l)))
+       (else (cons
+              (car l)
+              (rember-f test? a (cdr l))))))))
+
+;; 科里化
+(define eq?-c
+  (lambda (a)
+    (lambda (c)
+      (eq? a c))))
+
+(define setL
+  (lambda (new old l)
+    (cons new (cons old l))))
+
+(define setR
+  (lambda (new old l)
+    (cons old (cons new l))))
+
+(define insert-g
+  (lambda (test?)
+    (lambda (seq)
+    (lambda (new old l)
+      (cond
+       ((null? l) '())
+       ((test? old (car l)) (seq new old
+                                  (((insert-g test?) seq) new old (cdr l))))
+       (else (cons
+              (car l)
+              (((insert-g test?) seq) new old (cdr l)))))))))
+
+(define atom-to-function
+  (lambda x
+    (cond
+     ((eq? x '(+)) o+)
+     ((eq? x '(-)) o-)
+     (else Expt))))
