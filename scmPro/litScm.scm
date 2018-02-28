@@ -501,8 +501,3 @@
      (else (cons
             (evens-only* (car l))
             (evens-only* (cdr l)))))))
-
-(define evens-only*&co
-  (lambda (l col)
-    (cond
-     ((null? l) '()))))
