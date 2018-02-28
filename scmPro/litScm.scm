@@ -16,6 +16,11 @@
      ((atom? (car l)) (lat? (cdr l)))
      (else #f))))
 
+;; 奇数?
+(define even?
+  (lambda (a)
+    (= (* (quot a 2) 2))))
+
 ;; 使用 eqan? 代替 eq?
 (define member?
   (lambda (a lat)
@@ -144,11 +149,19 @@
      ((zero? m) 1)
      (else (* (Expt n (sub1 m)) n)))))
 
+;; 除法
 (define quot
   (lambda (n m)
     (cond
      ((< n m) 0)
      (else (add1 (div (o- n m) m))))))
+;; 余数
+(define remain
+  (lambda (n m)
+    (cond
+     ((< n m) n)
+     (else (remain (o- n m))))))
+
 
 (define length
   (lambda (l)
@@ -475,3 +488,21 @@
      ((eq? x '(+)) o+)
      ((eq? x '(-)) o-)
      (else Expt))))
+
+(define evens-only*
+  (lambda (l)
+    (cond
+     ((null? l) '())
+     ((atom? (car l)) (cond
+                       ((even? (car l)) (evens-only* (cdr l)))
+                       (else (cons
+                              (car l)
+                              (evens-only* (cdr l))))))
+     (else (cons
+            (evens-only* (car l))
+            (evens-only* (cdr l)))))))
+
+(define evens-only*&co
+  (lambda (l col)
+    (cond
+     ((null? l) '()))))
