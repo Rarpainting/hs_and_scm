@@ -501,3 +501,44 @@
      (else (cons
             (evens-only* (car l))
             (evens-only* (cdr l)))))))
+
+;;(define evens-only*&co
+;;  (lambda ))
+
+;; Capter 9
+(define shift
+  (lambda (pair)
+    (build (first (first pair))
+           (build (second (first pair))
+                  (second pair)))))
+
+;; 构建 (a (b (c d))) 的结构
+(define align
+  (lambda (pora)
+    (cond
+     ((atom? pora) pora)
+     ((a-pair? (first pora)) (align (shift pora)))
+     (else (build (first pora)
+                  (align (second pora)))))))
+
+(define length*
+  (lambda (pora)
+    (cond
+     ((atom? pora) 1)
+     (else (o+ (length* (first pora))
+               (length* (second pora)))))))
+
+(define weight*
+  (lambda (pora)
+    (cond
+     ((atom? pora) 1)
+     (else (o+ (* (weight* (first pora)) 2)
+               (weight* (second pora)))))))
+
+(define shuffle
+  (lambda (pora)
+    (cond
+     ((atom? pora) pora)
+     ((a-pair? (first pora)) (shuffle (revpair pora)))
+     (else (build (first pora)
+                  (shuffle (second pora)))))))
