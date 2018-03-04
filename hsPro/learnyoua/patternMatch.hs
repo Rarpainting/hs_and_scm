@@ -26,13 +26,24 @@ myCompare a b
   | otherwise = LT
 
 -- where 关键字
+-- 绑定语法结构
 calcBmis :: (RealFloat a) => [(a, a)] -> [a]
 calcBmis xs = [bmi w h | (w, h) <- xs]
   where bmi weight height = weight / height ^ 2
 
+calcBmis2 xs = [bmi | (w, h) <- xs, let bmi = w / h ^ 2, bmi >= 25.0]
+
 -- let 关键字
+-- 绑定表达式
+-- let [expression] in
 cylinder :: (RealFloat a) => a -> a -> a
-cylinder h =
+cylinder r h =
   let sidArea = 2 * pi * r * h
       topArea = pi * r ^ 2
   in sidArea + 2 * topArea
+
+-- case expression
+head' :: [a] -> a
+head' xs = case xs of
+  [] -> error "Not head for empty lists"
+  (x:_) -> x
